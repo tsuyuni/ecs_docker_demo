@@ -1,50 +1,29 @@
-# ECS Docker Demo
+# Create T3 App
 
-## Local Access
+This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
 
-### Check Docker version
+## What's next? How do I make an app with this?
 
-```bash
-$ docker -v
+We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
 
-> Docker version 25.0.3, build 4debf41
-```
+If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
 
-### Build image and run container
+- [Next.js](https://nextjs.org)
+- [NextAuth.js](https://next-auth.js.org)
+- [Prisma](https://prisma.io)
+- [Drizzle](https://orm.drizzle.team)
+- [Tailwind CSS](https://tailwindcss.com)
+- [tRPC](https://trpc.io)
 
-```bash
-$ docker build -t ecs-docker-demo .
-$ docker run --name ecs-docker-demo -p 8080:80 -dit ecs-docker-demo
-```
+## Learn More
 
-`-dit` is shorthand for `-d -i -t `
+To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
 
-- `-d or --detach`: Run container in background and print container ID
-- `-i or --interactive`: Keep STDIN open even if not attached
-- `-t or --tty`: Allocate a pseudo-TTY
+- [Documentation](https://create.t3.gg/)
+- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
 
-Now you have a local access to http://localhost:8080
+You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
 
-### Execute a command in container
+## How do I deploy this?
 
-```bash
-$ docker exec -it ecs-docker-demo bash
-```
-
-### Exit container
-
-```bash
-$ exit
-```
-
-### Stop container
-
-```bash
-$ docker stop ecs-docker-demo
-```
-
-### Delete container
-
-```bash
-$ docker rm ecs-docker-demo
-```
+Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
