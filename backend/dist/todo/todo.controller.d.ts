@@ -1,4 +1,7 @@
 import { Request } from "express";
 export declare class TodoController {
-    getTodos2(request: Request): import("http").IncomingHttpHeaders;
+    getTodos(req: Request): Promise<{
+        id: string;
+        title: string;
+    }[]>;
 }

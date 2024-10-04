@@ -14,9 +14,12 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TodoController = void 0;
 const common_1 = require("@nestjs/common");
+const prismaClient_1 = require("../utils/prismaClient");
 let TodoController = class TodoController {
-    getTodos2(request) {
-        return request.headers;
+    async getTodos(req) {
+        console.log("here");
+        const todos = await prismaClient_1.default.todo.findMany();
+        return todos;
     }
 };
 exports.TodoController = TodoController;
@@ -25,8 +28,8 @@ __decorate([
     __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
-], TodoController.prototype, "getTodos2", null);
+    __metadata("design:returntype", Promise)
+], TodoController.prototype, "getTodos", null);
 exports.TodoController = TodoController = __decorate([
     (0, common_1.Controller)("todo")
 ], TodoController);
