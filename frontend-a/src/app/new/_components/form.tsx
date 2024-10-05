@@ -1,7 +1,7 @@
 "use client";
 
-import { createTodo } from "@/actions/todos";
-import handleRevalidatePath from "@/app/hooks/revalidatePath";
+import { createTodo } from "@actions/todos";
+import handleRevalidatePath from "@hooks/revalidatePath";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 

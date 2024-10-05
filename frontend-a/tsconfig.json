@@ -19,6 +19,9 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
+      "@actions/*": ["./src/actions/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@hooks/*": ["./src/hooks/*"],
       "@backend/*": ["../backend/src/*"]
     }
   },
