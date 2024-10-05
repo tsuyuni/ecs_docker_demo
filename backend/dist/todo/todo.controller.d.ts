@@ -1,6 +1,5 @@
-import { Request } from "express";
 export declare class TodoController {
-    getTodos(req: Request): Promise<{
+    getTodos(): Promise<{
         id: string;
         title: string;
     }[]>;

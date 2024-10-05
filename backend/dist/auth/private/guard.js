@@ -25,4 +25,4 @@ exports.AuthGuard = AuthGuard;
 exports.AuthGuard = AuthGuard = __decorate([
     (0, common_1.Injectable)()
 ], AuthGuard);
-//# sourceMappingURL=auth.guard.js.map
+//# sourceMappingURL=guard.js.map
