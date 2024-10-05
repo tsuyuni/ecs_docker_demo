@@ -6,19 +6,23 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AppModule = void 0;
+exports.AuthGuard = void 0;
 const common_1 = require("@nestjs/common");
-const app_controller_1 = require("./app.controller");
-const app_service_1 = require("./app.service");
-const todo_1 = require("./controllers/todo");
-let AppModule = class AppModule {
+const authorizer_1 = require("../utils/authorizer");
+let AuthGuard = class AuthGuard {
+    async canActivate(context) {
+        const headers = context.switchToHttp().getRequest().headers;
+        const cookie = headers.cookie;
+        const accessToken = cookie
+            ?.split(";")
+            ?.filter((c) => c.includes("accessToken="))[0]
+            ?.split("accessToken=")[1];
+        const auth = await (0, authorizer_1.default)({ accessToken });
+        return Boolean(auth);
+    }
 };
-exports.AppModule = AppModule;
-exports.AppModule = AppModule = __decorate([
-    (0, common_1.Module)({
-        imports: [],
-        controllers: [app_controller_1.AppController, todo_1.TodoController],
-        providers: [app_service_1.AppService],
-    })
-], AppModule);
-//# sourceMappingURL=app.module.js.map
+exports.AuthGuard = AuthGuard;
+exports.AuthGuard = AuthGuard = __decorate([
+    (0, common_1.Injectable)()
+], AuthGuard);
+//# sourceMappingURL=private.js.map

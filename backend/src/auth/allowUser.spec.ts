@@ -1,4 +1,4 @@
-import { AllowUserAuthGuard } from "./guard";
+import { AllowUserAuthGuard } from "./allowUser";
 
 describe("AllowUserAuthGuard", () => {
   it("should be defined", () => {
