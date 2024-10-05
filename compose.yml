@@ -17,6 +17,14 @@ services:
       - 5555:5555
     volumes:
       - ./backend:/app
+  frontend-a:
+    build:
+      context: ./frontend-a
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    volumes:
+      - ./frontend-a:/app
 
 volumes:
   db:

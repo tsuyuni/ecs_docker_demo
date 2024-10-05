@@ -11,7 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TodoController = void 0;
 const common_1 = require("@nestjs/common");
-const prismaClient_1 = require("../utils/prismaClient");
+const prismaClient_1 = require("../../utils/prismaClient");
 let TodoController = class TodoController {
     async getTodos() {
         const todos = await prismaClient_1.default.todo.findMany();
@@ -28,4 +28,4 @@ __decorate([
 exports.TodoController = TodoController = __decorate([
     (0, common_1.Controller)("todo")
 ], TodoController);
-//# sourceMappingURL=todo.controller.js.map
+//# sourceMappingURL=controller.js.map
