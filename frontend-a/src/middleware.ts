@@ -20,7 +20,7 @@ export const middleware = async (
     },
   });
 
-  if (!authenticated) {
+  if (request.nextUrl.pathname !== "/login" && !authenticated) {
     request.nextUrl.pathname = "/login";
     return NextResponse.redirect(request.nextUrl);
   }
