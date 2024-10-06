@@ -1,12 +1,7 @@
+import LoginForm from "./_components/form";
+
 const LoginPage = async () => {
-  return (
-    <form>
-      <input />
-      <input />
-      <button>Login</button>
-      <h2>Login</h2>
-    </form>
-  );
+  return <LoginForm />;
 };
 
 export default LoginPage;

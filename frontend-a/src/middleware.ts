@@ -12,6 +12,7 @@ export const middleware = async (
     operation: async (contextSpec) => {
       try {
         const authSession = await fetchAuthSession(contextSpec, {});
+        console.log(authSession);
         return !!authSession.tokens;
       } catch (error) {
         console.log(error);
