@@ -1,22 +1,13 @@
 "use client";
 
+import config from "@/config";
 import { Amplify } from "aws-amplify";
 import { signIn } from "aws-amplify/auth";
 import { useState } from "react";
 
-Amplify.configure(
-  {
-    Auth: {
-      Cognito: {
-        userPoolId: "ap-northeast-1_TetkZJ1SX",
-        userPoolClientId: "4ocbog7c71hmnf9707dgv2bvte",
-      },
-    },
-  },
-  {
-    ssr: true,
-  }
-);
+Amplify.configure(config, {
+  ssr: true,
+});
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
