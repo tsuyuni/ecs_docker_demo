@@ -1,29 +1,18 @@
 "use server";
 
-import { TodoController } from "@backend/controllers/todo";
-import { cookies } from "next/headers";
+import { client } from "@utils/client";
 
-export const fetchTodos: TodoController["getAll"] = async () => {
-  const res = await fetch("http://backend:8080/todo", {
-    cache: "no-cache",
-    headers: {
-      Cookie: cookies().toString(),
-    },
-  });
-  const data = await res.json();
-  return data;
+export const fetchTodos = async () => {
+  const { data } = await client.GET("/todo");
+  return data?.items;
 };
 
 export const createTodo = async (title: string) => {
-  const res = await fetch("http://backend:8080/todo", {
-    method: "POST",
-    body: JSON.stringify({ title }),
-    headers: {
-      "Content-Type": "application/json",
-      Cookie: cookies().toString(),
+  const { data } = await client.POST("/todo", {
+    body: {
+      title,
     },
   });
-  console.log(res);
-  const data = await res.json();
-  return data;
+
+  return data?.item;
 };

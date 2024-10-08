@@ -2,6 +2,10 @@ import { fetchAuthSession } from "aws-amplify/auth/server";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { runWithAmplifyServerContext } from "@utils/amplifyClientUsingReqRes";
+import { cognitoUserPoolsTokenProvider } from "aws-amplify/auth/cognito";
+import { defaultStorage } from "aws-amplify/utils";
+
+cognitoUserPoolsTokenProvider.setKeyValueStorage(defaultStorage);
 
 export const middleware = async (
   request: NextRequest,
@@ -11,8 +15,8 @@ export const middleware = async (
     nextServerContext: { cookies },
     operation: async (contextSpec) => {
       try {
-        const authSession = await fetchAuthSession(contextSpec, {});
-        return !!authSession.tokens;
+        const { tokens } = await fetchAuthSession(contextSpec, {});
+        return !!tokens;
       } catch (error) {
         console.log(error);
         return false;
@@ -22,6 +26,9 @@ export const middleware = async (
 
   if (request.nextUrl.pathname !== "/login" && !authenticated) {
     request.nextUrl.pathname = "/login";
+    return NextResponse.redirect(request.nextUrl);
+  } else if (request.nextUrl.pathname === "/login" && authenticated) {
+    request.nextUrl.pathname = "/";
     return NextResponse.redirect(request.nextUrl);
   }
 };

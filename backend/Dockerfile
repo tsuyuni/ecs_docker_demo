@@ -1,6 +1,6 @@
 FROM node:22-alpine
 
-RUN apk add bash && npm i -g prisma @nestjs/cli
+RUN apk add bash && npm i -g prisma @nestjs/cli nodemon
 
 WORKDIR /app
 

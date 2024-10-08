@@ -19,7 +19,10 @@
     "noFallthroughCasesInSwitch": false,
     "paths": {
       "@utils/*": ["src/utils/*"],
-      "@auth/*": ["src/auth/*"]
+      "@auth/*": ["src/auth/*"],
+      "@decorators/*": ["src/decorators/*"],
+      "@models/*": ["src/models/*"],
+      "@dto/*": ["src/dto/*"]
     },
     "composite": true
   }

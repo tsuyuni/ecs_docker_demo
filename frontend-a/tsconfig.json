@@ -22,7 +22,7 @@
       "@actions/*": ["./src/actions/*"],
       "@utils/*": ["./src/utils/*"],
       "@hooks/*": ["./src/hooks/*"],
-      "@backend/*": ["../backend/src/*"]
+      "@backend/*": ["../backend/*"]
     }
   },
   "references": [{ "path": "../backend" }],
