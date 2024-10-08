@@ -22,7 +22,6 @@ const authorizer = async ({ cookie }: { cookie: string }) => {
       "$1"
     );
     const payload = await verifier.verify(accessToken);
-    console.log(payload);
     return payload;
   } catch (err) {
     console.error(err);

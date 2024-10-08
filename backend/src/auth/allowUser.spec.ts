@@ -1,7 +1,7 @@
-import { AllowUserAuthGuard } from "./allowUser";
+import { AllowUserGuard } from "./allowUser";
 
-describe("AllowUserAuthGuard", () => {
+describe("AllowUserGuard", () => {
   it("should be defined", () => {
-    expect(new AllowUserAuthGuard()).toBeDefined();
+    expect(new AllowUserGuard()).toBeDefined();
   });
 });

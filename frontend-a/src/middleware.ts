@@ -3,9 +3,9 @@ import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { runWithAmplifyServerContext } from "@utils/amplifyClientUsingReqRes";
 import { cognitoUserPoolsTokenProvider } from "aws-amplify/auth/cognito";
-import { defaultStorage } from "aws-amplify/utils";
+import { CookieStorage } from "aws-amplify/utils";
 
-cognitoUserPoolsTokenProvider.setKeyValueStorage(defaultStorage);
+cognitoUserPoolsTokenProvider.setKeyValueStorage(new CookieStorage());
 
 export const middleware = async (
   request: NextRequest,
@@ -16,6 +16,7 @@ export const middleware = async (
     operation: async (contextSpec) => {
       try {
         const { tokens } = await fetchAuthSession(contextSpec, {});
+        console.log(tokens);
         return !!tokens;
       } catch (error) {
         console.log(error);

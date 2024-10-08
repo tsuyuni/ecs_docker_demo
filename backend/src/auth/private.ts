@@ -9,7 +9,10 @@ export class AuthGuard implements CanActivate {
     const headers = request.headers;
     const cookie = headers.cookie;
     const auth = await authorizer({ cookie });
-    request["guard"] = auth;
-    return Boolean(auth);
+    if (auth) {
+      request["guard"] = auth;
+      return true;
+    }
+    return false;
   }
 }

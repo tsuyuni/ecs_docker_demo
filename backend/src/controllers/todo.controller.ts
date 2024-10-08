@@ -15,6 +15,7 @@ import {
   CreateTodoResponse,
   GetTodosResponse,
 } from "@dto/todo.dto";
+import { AllowUserGuard } from "@auth/allowUser";
 
 @Controller("todo")
 export class TodoController {
