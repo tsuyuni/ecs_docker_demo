@@ -8,10 +8,18 @@ export class AuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<Request>();
     const headers = request.headers;
     const cookie = headers.cookie;
-    const accessToken = cookie
-      ?.split(";")
-      ?.filter((c) => c.includes("accessToken="))[0]
-      ?.split("accessToken=")[1];
+    const lastAuthUser = cookie.replace(
+      new RegExp(
+        `^.*CognitoIdentityServiceProvider.${process.env.COGNITO_USER_POOL_CLIENT_ID}.LastAuthUser=(.*?);.*$`
+      ),
+      "$1"
+    );
+    const accessToken = cookie.replace(
+      new RegExp(
+        `^.*CognitoIdentityServiceProvider.${process.env.COGNITO_USER_POOL_CLIENT_ID}.${lastAuthUser}.accessToken=(.*?);.*$`
+      ),
+      "$1"
+    );
     const auth = await authorizer({ accessToken });
     request["guard"] = auth;
     return Boolean(auth);

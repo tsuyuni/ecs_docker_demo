@@ -1,9 +1,9 @@
 import { CognitoJwtVerifier } from "aws-jwt-verify";
 
 const verifier = CognitoJwtVerifier.create({
-  userPoolId: "ap-northeast-1_TetkZJ1SX",
+  userPoolId: process.env.COGNITO_USER_POOL_ID!,
   tokenUse: "access",
-  clientId: "4ocbog7c71hmnf9707dgv2bvte",
+  clientId: process.env.COGNITO_USER_POOL_CLIENT_ID!,
 });
 
 const authorizer = async ({ accessToken }: { accessToken: string }) => {

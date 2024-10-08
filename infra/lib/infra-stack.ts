@@ -1,8 +1,9 @@
 import * as cdk from "aws-cdk-lib";
 import { UserPool } from "aws-cdk-lib/aws-cognito";
+import { InterfaceVpcEndpointAwsService, Vpc } from "aws-cdk-lib/aws-ec2";
 import { Construct } from "constructs";
 
-export class InfrastructureStack extends cdk.Stack {
+export class InfraStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -39,6 +40,18 @@ export class InfrastructureStack extends cdk.Stack {
 
     userPool.addClient("CognitoUserPoolClient", {
       userPoolClientName: "ecs-docker-demo-client",
+    });
+
+    const vpc = new Vpc(this, "VPC", {
+      maxAzs: 2,
+      vpcName: "ecs-docker-demo-vpc",
+    });
+
+    vpc.addInterfaceEndpoint("ECR-endpoint", {
+      service: InterfaceVpcEndpointAwsService.ECR,
+    });
+    vpc.addInterfaceEndpoint("ECR-Docker-endpoint", {
+      service: InterfaceVpcEndpointAwsService.ECR_DOCKER,
     });
   }
 }
