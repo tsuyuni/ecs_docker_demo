@@ -6,8 +6,21 @@ const verifier = CognitoJwtVerifier.create({
   clientId: process.env.COGNITO_USER_POOL_CLIENT_ID!,
 });
 
-const authorizer = async ({ accessToken }: { accessToken: string }) => {
+const authorizer = async ({ cookie }: { cookie: string }) => {
   try {
+    const lastAuthUser = cookie.replace(
+      new RegExp(
+        `^.*CognitoIdentityServiceProvider.${process.env.COGNITO_USER_POOL_CLIENT_ID}.LastAuthUser=(.*?);.*$`
+      ),
+      "$1"
+    );
+    console.log(lastAuthUser);
+    const accessToken = cookie.replace(
+      new RegExp(
+        `^.*CognitoIdentityServiceProvider.${process.env.COGNITO_USER_POOL_CLIENT_ID}.${lastAuthUser}.accessToken=(.*?);.*$`
+      ),
+      "$1"
+    );
     const payload = await verifier.verify(accessToken);
     console.log(payload);
     return payload;
