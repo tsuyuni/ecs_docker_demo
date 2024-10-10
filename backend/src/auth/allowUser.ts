@@ -9,7 +9,6 @@ export class AllowUserGuard implements CanActivate {
     const cookie = headers.cookie;
     const auth = await authorizer({ cookie });
     if (auth) {
-      console.log(auth);
       const groups = auth["cognito:groups"];
       if (groups?.includes("users")) {
         return true;

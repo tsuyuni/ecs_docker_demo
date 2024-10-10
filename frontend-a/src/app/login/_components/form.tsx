@@ -1,13 +1,12 @@
 "use client";
 
-import config from "@/config";
-import { Amplify } from "aws-amplify";
-import { signIn } from "aws-amplify/auth";
 import { useState } from "react";
+import { signIn } from "@utils/cognito/signIn";
+import test from "@/utils/cognito/test";
 
-Amplify.configure(config, {
-  ssr: true,
-});
+// Amplify.configure(config, {
+//   ssr: true,
+// });
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -17,12 +16,14 @@ const LoginForm = () => {
     <form
       onSubmit={async (e) => {
         e.preventDefault();
-        console.log(email, password);
-        const signInOutput = await signIn({
-          username: email,
-          password,
-        });
-        console.log(signInOutput);
+
+        // await signIn();
+        test();
+        // const signInOutput = await signIn({
+        //   username: email,
+        //   password,
+        // });
+        // console.log(signInOutput);
       }}
     >
       <input

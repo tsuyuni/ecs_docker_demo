@@ -14,7 +14,6 @@ const authorizer = async ({ cookie }: { cookie: string }) => {
       ),
       "$1"
     );
-    console.log(lastAuthUser);
     const accessToken = cookie.replace(
       new RegExp(
         `^.*CognitoIdentityServiceProvider.${process.env.COGNITO_USER_POOL_CLIENT_ID}.${lastAuthUser}.accessToken=(.*?);.*$`

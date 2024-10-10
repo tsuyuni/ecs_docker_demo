@@ -8,4 +8,5 @@ export const client = createClient<paths>({
     "Content-Type": "application/json",
     Cookie: cookies().toString(),
   },
+  cache: "no-cache",
 });
