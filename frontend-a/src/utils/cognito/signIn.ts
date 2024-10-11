@@ -1,89 +1,109 @@
-import generateKeyPair from "@utils/cognito/generateKeyPair";
-import getSignatureString from "./getSignatureString";
-import generateSymmetricKey from "./generateSymmetricKey";
+"use client";
+
+import { SignInInput } from "./types";
+import generateRandomSmallA from "./utils/generateRandomSmallA";
+import calculateA from "./utils/calculateA";
+import client from "./utils/client";
 import { BigInteger } from "jsbn";
+import getPasswordAuthenticationKey from "./utils/getPasswordAuthenticationKey";
+import getNowString from "./utils/getNowString";
+import { createHmac } from "crypto";
+import Cookies from "js-cookie";
 
-export const signIn = async () => {
-  try {
-    const { a, A } = generateKeyPair();
+const signIn = async ({ email, password }: SignInInput) => {
+  const smallAValue = generateRandomSmallA();
+  const largeAValue = calculateA(smallAValue);
 
-    const res = await fetch(
-      "https://cognito-idp.ap-northeast-1.amazonaws.com/",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-amz-json-1.1",
-          "X-Amz-Target": "AWSCognitoIdentityProviderService.InitiateAuth",
-          Accept: "*/*",
-          Host: "cognito-idp.ap-northeast-1.amazonaws.com",
-          "Accept-Encoding": "gzip, deflate, br",
-          Connection: "keep-alive",
-        },
-        body: JSON.stringify({
-          AuthFlow: "USER_SRP_AUTH",
-          ClientId: process.env.NEXT_PUBLIC_USER_POOL_CLIENT_ID,
-          AuthParameters: {
-            CHALLENGE_NAME: "SRP_A",
-            USERNAME: "yuri.tsuchikawa@mairutech.com",
-            SRP_A: A.toString(16),
-          },
-        }),
-      }
-    );
+  const { ChallengeParameters } = await client.initiateAuth({
+    AuthFlow: "USER_SRP_AUTH",
+    ClientId: process.env.NEXT_PUBLIC_USER_POOL_CLIENT_ID,
+    AuthParameters: {
+      USERNAME: email,
+      SRP_A: largeAValue.toString(16),
+    },
+  });
 
-    if (!res.ok) throw new Error("Failed to initiate auth");
+  const serverBValue = new BigInteger(ChallengeParameters.SRP_B, 16);
+  const salt = new BigInteger(ChallengeParameters.SALT, 16);
 
-    const data = await res.json();
+  const hkdf = getPasswordAuthenticationKey(
+    ChallengeParameters.USER_ID_FOR_SRP,
+    password,
+    smallAValue,
+    largeAValue,
+    serverBValue,
+    salt
+  );
 
-    const { SALT, SECRET_BLOCK, SRP_B, USERNAME, USER_ID_FOR_SRP } =
-      data.ChallengeParameters;
+  const dateNow = getNowString();
 
-    console.log(SALT, SECRET_BLOCK, SRP_B, USERNAME, USER_ID_FOR_SRP);
+  const bufUPIDaToB = Buffer.from(
+    process.env.NEXT_PUBLIC_USER_POOL_NAME!,
+    "utf-8"
+  );
+  const bufUNaToB = Buffer.from(ChallengeParameters.USER_ID_FOR_SRP, "utf-8");
+  const bufSBaToB = Buffer.from(ChallengeParameters.SECRET_BLOCK, "base64");
+  const bufDNaToB = Buffer.from(dateNow, "utf-8");
 
-    const symmetricKey = generateSymmetricKey(
-      A,
-      new BigInteger(SRP_B, 16),
-      a,
-      SALT,
-      "yuri.tsuchikawa@mairutech.com",
-      "Pass1014"
-    );
+  const bufConcat = Buffer.concat([
+    bufUPIDaToB,
+    bufUNaToB,
+    bufSBaToB,
+    bufDNaToB,
+  ]);
 
-    const { dateNow, signatureString } = getSignatureString(
-      "TetkZJ1SX",
-      "yuri.tsuchikawa@mairutech.com",
-      SECRET_BLOCK,
-      "sValue",
-      "uValue"
-    );
+  const hmac = createHmac("sha256", hkdf);
+  hmac.update(bufConcat);
+  const resultFromCrypto = hmac.digest();
+  const signatureString = resultFromCrypto.toString("base64");
 
-    const res2 = await fetch(
-      "https://cognito-idp.ap-northeast-1.amazonaws.com/",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-amz-json-1.1",
-          "X-Amz-Target": "AWSCognitoIdentityProviderService.InitiateAuth",
-          Accept: "*/*",
-          Host: "cognito-idp.ap-northeast-1.amazonaws.com",
-          "Accept-Encoding": "gzip, deflate, br",
-          Connection: "keep-alive",
-        },
-        body: JSON.stringify({
-          ChallengeName: "PASSWORD_VERIFIER",
-          ChallengeResponses: {
-            PASSWORD_CLAIM_SIGNATURE: signatureString,
-            PASSWORD_CLAIM_SECRET_BLOCK: SECRET_BLOCK,
-            TIMESTAMP: dateNow,
-            USERNAME: "yuri.tsuchikawa@mairutech.com",
-          },
-          ClientId: process.env.NEXT_PUBLIC_USER_POOL_CLIENT_ID,
-        }),
-      }
-    );
+  const { AuthenticationResult } = await client.respondToAuthChallenge({
+    ChallengeName: "PASSWORD_VERIFIER",
+    ClientId: process.env.NEXT_PUBLIC_USER_POOL_CLIENT_ID,
+    ChallengeResponses: {
+      USERNAME: ChallengeParameters.USER_ID_FOR_SRP,
+      PASSWORD_CLAIM_SECRET_BLOCK: ChallengeParameters.SECRET_BLOCK,
+      TIMESTAMP: dateNow,
+      PASSWORD_CLAIM_SIGNATURE: signatureString,
+    },
+  });
 
-    console.log(res2);
-  } catch (err) {
-    console.error(err);
-  }
+  Cookies.set(
+    `CognitoIdentityServiceProvider.${process.env.NEXT_PUBLIC_USER_POOL_CLIENT_ID}.LastAuthUser`,
+    ChallengeParameters.USER_ID_FOR_SRP,
+    {
+      secure: true,
+      sameSite: "Lax",
+      expires: 365,
+    }
+  );
+  Cookies.set(
+    `CognitoIdentityServiceProvider.${process.env.NEXT_PUBLIC_USER_POOL_CLIENT_ID}.${ChallengeParameters.USER_ID_FOR_SRP}.accessToken`,
+    AuthenticationResult.AccessToken,
+    {
+      secure: true,
+      sameSite: "Lax",
+      expires: 365,
+    }
+  );
+  Cookies.set(
+    `CognitoIdentityServiceProvider.${process.env.NEXT_PUBLIC_USER_POOL_CLIENT_ID}.${ChallengeParameters.USER_ID_FOR_SRP}.idToken`,
+    AuthenticationResult.IdToken,
+    {
+      secure: true,
+      sameSite: "Lax",
+      expires: 365,
+    }
+  );
+  Cookies.set(
+    `CognitoIdentityServiceProvider.${process.env.NEXT_PUBLIC_USER_POOL_CLIENT_ID}.${ChallengeParameters.USER_ID_FOR_SRP}.refreshToken`,
+    AuthenticationResult.RefreshToken,
+    {
+      secure: true,
+      sameSite: "Lax",
+      expires: 365,
+    }
+  );
 };
+
+export default signIn;
