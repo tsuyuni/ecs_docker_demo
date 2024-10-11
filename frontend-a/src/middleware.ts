@@ -1,15 +1,14 @@
-// import { fetchAuthSession } from "aws-amplify/auth/server";
-import {
-  CognitoRefreshToken,
-  CognitoUserPool,
-  CognitoUserSession,
-} from "amazon-cognito-identity-js";
-import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-import ServerCookieStorage from "@utils/serverCookieStorage";
-// import { cognitoUserPool } from "./utils/cognitoUserPool";
+import fetchAuthSession from "./utils/cognito/fetchAuthSession";
 
-export const middleware = async (request: NextRequest) => {};
+export const middleware = async (request: NextRequest) => {
+  const response = NextResponse.next();
+  const authSession = await fetchAuthSession(request, response);
+
+  console.log(response);
+
+  return response;
+};
 
 export const config = {
   matcher: ["/((?!.*\\..*|_next).*)"],

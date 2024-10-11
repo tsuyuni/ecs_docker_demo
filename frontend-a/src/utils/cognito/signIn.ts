@@ -14,7 +14,7 @@ const signIn = async ({ email, password }: SignInInput) => {
   const smallAValue = generateRandomSmallA();
   const largeAValue = calculateA(smallAValue);
 
-  const { ChallengeParameters } = await client.initiateAuth({
+  const { ChallengeParameters } = await client.request("InitiateAuth", {
     AuthFlow: "USER_SRP_AUTH",
     ClientId: process.env.NEXT_PUBLIC_USER_POOL_CLIENT_ID,
     AuthParameters: {
@@ -57,16 +57,21 @@ const signIn = async ({ email, password }: SignInInput) => {
   const resultFromCrypto = hmac.digest();
   const signatureString = resultFromCrypto.toString("base64");
 
-  const { AuthenticationResult } = await client.respondToAuthChallenge({
-    ChallengeName: "PASSWORD_VERIFIER",
-    ClientId: process.env.NEXT_PUBLIC_USER_POOL_CLIENT_ID,
-    ChallengeResponses: {
-      USERNAME: ChallengeParameters.USER_ID_FOR_SRP,
-      PASSWORD_CLAIM_SECRET_BLOCK: ChallengeParameters.SECRET_BLOCK,
-      TIMESTAMP: dateNow,
-      PASSWORD_CLAIM_SIGNATURE: signatureString,
-    },
-  });
+  const { AuthenticationResult } = await client.request(
+    "RespondToAuthChallenge",
+    {
+      ChallengeName: "PASSWORD_VERIFIER",
+      ClientId: process.env.NEXT_PUBLIC_USER_POOL_CLIENT_ID,
+      ChallengeResponses: {
+        USERNAME: ChallengeParameters.USER_ID_FOR_SRP,
+        PASSWORD_CLAIM_SECRET_BLOCK: ChallengeParameters.SECRET_BLOCK,
+        TIMESTAMP: dateNow,
+        PASSWORD_CLAIM_SIGNATURE: signatureString,
+      },
+    }
+  );
+
+  console.log(AuthenticationResult);
 
   Cookies.set(
     `CognitoIdentityServiceProvider.${process.env.NEXT_PUBLIC_USER_POOL_CLIENT_ID}.LastAuthUser`,
